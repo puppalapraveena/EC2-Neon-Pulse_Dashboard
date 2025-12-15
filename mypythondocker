@@ -1,0 +1,13 @@
+FROM python:3.10-slim AS build
+WORKDIR /pythonapp
+ADD . /pythonapp
+RUN pip install --prefix=/aws -r requirements.txt
+
+FROM python:3.10-slim AS runtime
+LABEL project=" ec2-neon"
+LABEL author="devsteam"
+COPY --from=build /pythonapp /chinni
+COPY --from=build /aws /usr/share
+WORKDIR /chinni
+EXPOSE 5001
+CMD ["python","app.py"]
